@@ -1,3 +1,5 @@
+![](https://github.com/khanrc/sconf/workflows/CI/badge.svg)
+
 # sconf: Simple config supporting CLI modification
 
 
