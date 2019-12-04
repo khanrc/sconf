@@ -203,5 +203,12 @@ class Config:
         return len(self._cfg)
 
     @staticmethod
-    def add_yaml_repr(cls, tag, instance_repr_fn=str):
-        add_repr_to_yaml(yaml, cls, tag, instance_repr_fn)
+    def add_yaml_repr(add_cls, tag, instance_repr_fn=str):
+        """ Add yaml representation
+
+        params:
+            add_cls: adding class to yaml representation
+            tag: representation tag
+            instance_repr_fn: instance representor function
+        """
+        add_repr_to_yaml(yaml, add_cls, tag, instance_repr_fn)
