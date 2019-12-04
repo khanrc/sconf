@@ -1,4 +1,4 @@
-name: Python package
+name: CI
 
 on: [push]
 
@@ -24,7 +24,7 @@ jobs:
     - name: Lint with pylint
       run: |
         pip install pylint
-        pylint sconf
+        pylint -E sconf
     - name: Test with pytest
       run: |
         pip install pytest
