@@ -199,6 +199,9 @@ class Config:
     def __contains__(self, key):
         return key in self._cfg
 
+    def __len__(self):
+        return len(self._cfg)
+
     @staticmethod
     def add_yaml_repr(cls, tag, instance_repr_fn=str):
         add_repr_to_yaml(yaml, cls, tag, instance_repr_fn)
