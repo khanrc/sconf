@@ -1,4 +1,4 @@
-![](https://github.com/khanrc/sconf/workflows/CI/badge.svg)
+![](https://github.com/khanrc/sconf/workflows/build/badge.svg)
 
 # sconf: Simple config supporting CLI modification
 
