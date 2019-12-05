@@ -23,6 +23,30 @@ def test_basic():
     assert len(cfg['a']) == 2
 
 
+def test_list():
+    dic = yaml.load("""
+        b:
+            - 1
+            - 2
+            - 3
+        c:
+            - a: 10
+              b: 10
+            - q: 20
+              w: 20
+    """)
+    cfg = Config(dic)
+
+    assert len(cfg) == 2
+    assert len(cfg['b']) == 3
+    assert len(cfg['c']) == 2
+    assert cfg['b'] == [1, 2, 3]
+    assert cfg['c'][0]['a'] == 10
+    assert cfg['c'][0]['b'] == 10
+    assert cfg['c'][1]['q'] == 20
+    assert cfg['c'][1]['w'] == 20
+
+
 def test_modify():
     dic = yaml.load("""
         test: 1
