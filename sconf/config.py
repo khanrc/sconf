@@ -9,7 +9,9 @@ class Config:
     def __init__(self, *keys, default=None, colorize_modified_item=True):
         """
         Args:
-            keys (str or dict)
+            keys (str, dict): yaml path or loaded dict
+            default (str, dict): default key
+            colorize_modified_item (bool)
         """
         self.colorize_modified_item = colorize_modified_item
 
@@ -67,8 +69,9 @@ class Config:
         build_keydic(self._cfg, '', self._keydic)
 
     def argv_update(self, argv=None):
-        """ parse argv & update self._cfg
+        """ Update self._cfg using argv
         argv structure: [option1, value1, option2, value2, ...]
+        If argv is not given, use sys.argv[1:] as default.
         """
         if not argv:
             import sys
@@ -78,8 +81,8 @@ class Config:
         assert N % 2 == 0, "Key-value should be paired"
 
         for i in range(0, N, 2):
-            opts, value = argv[i:i+2]
-            self._update(opts, value)
+            flat_key, value = argv[i:i+2]
+            self._update(flat_key, value)
 
         self._build_keydic()
 
@@ -115,11 +118,12 @@ class Config:
             if self.colorize_modified_item:
                 self._modified.setdefault(id(last), set()).add(key)
 
-    def _find_lastdic(self, opts):
+    def _find_lastdic(self, flat_key):
+        """ Find parent dictionary of given flat_key """
         def get_parentkey(key):
             return key[:key.rindex('.')]
 
-        key = '.' + opts
+        key = '.' + flat_key
         key_parent = get_parentkey(key)
         ret = []
         cand = {}
@@ -142,6 +146,11 @@ class Config:
         return out.getvalue().strip()
 
     def dumps(self, modified_color=36, quote_str=False):
+        """ Dump to colorized string
+        Args:
+            modified_color: color for modified item
+            quote_str: quoting string for identifying string and keyword
+        """
         strs = []
         tab = '  '
 
@@ -209,8 +218,10 @@ class Config:
     @staticmethod
     def add_yaml_repr(add_cls, tag, instance_repr_fn=str):
         """ Add yaml representation
+        If you use custom class, including python builtin, you should specify
+        the representation for the `yaml()` dumping function.
 
-        params:
+        Args:
             add_cls: adding class to yaml representation
             tag: representation tag
             instance_repr_fn: instance representor function
