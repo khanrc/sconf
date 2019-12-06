@@ -5,7 +5,7 @@ from sconf import Config
 yaml = YAML()
 
 
-def test_basic():
+def test_len():
     dic = yaml.load("""
         test: 1
         hmm: 2
@@ -15,36 +15,55 @@ def test_basic():
     """)
     cfg = Config(dic)
 
-    assert cfg['test'] == 1
-    assert cfg['hmm'] == 2
-    assert cfg['a']['q'] == 1
-    assert cfg['a']['w'] == 2
     assert len(cfg) == 3
     assert len(cfg['a']) == 2
 
 
-def test_list():
+def test_contain():
     dic = yaml.load("""
-        b:
-            - 1
-            - 2
-            - 3
-        c:
-            - a: 10
-              b: 10
-            - q: 20
-              w: 20
+        test: 1
+        hmm: 2
+        a:
+            q: 1
+            w: 2
     """)
     cfg = Config(dic)
 
-    assert len(cfg) == 2
-    assert len(cfg['b']) == 3
-    assert len(cfg['c']) == 2
-    assert cfg['b'] == [1, 2, 3]
-    assert cfg['c'][0]['a'] == 10
-    assert cfg['c'][0]['b'] == 10
-    assert cfg['c'][1]['q'] == 20
-    assert cfg['c'][1]['w'] == 20
+    assert 'test' in cfg
+    assert 'hmm' in cfg
+    assert 'a' in cfg
+    assert 'q' in cfg['a']
+    assert 'w' in cfg['a']
+
+
+def test_get():
+    dic = yaml.load("""
+        test: 1
+        hmm: 2
+        a:
+            q: 1
+            w: 2
+    """)
+    cfg = Config(dic)
+
+    assert cfg.get('test') == 1
+    assert cfg.get('non-key') is None
+    assert cfg.get('b', 'default') == 'default'
+    assert cfg.get('a').get('q') == 1
+
+
+def test_str_repr():
+    dic = yaml.load("""
+        test: 1
+        hmm: 2
+        a:
+            q: 1
+            w: 2
+    """)
+    cfg = Config(dic)
+
+    assert repr(cfg) == repr(cfg._cfg)
+    assert str(cfg) == str(cfg._cfg)
 
 
 def test_modify():
@@ -63,31 +82,3 @@ def test_modify():
     assert len(cfg['a']) == 4
     assert cfg['a']['z']
     assert cfg['a']['q'] == 2
-
-
-def test_merge():
-    dic1 = yaml.load("""
-        test: 1
-        hmm: 2
-        a:
-            q: 1
-            w: 2
-    """)
-    dic2 = yaml.load("""
-        test: 2
-        hmm: 3
-        a:
-            w: 8
-            c: 6
-        b:
-            bq: 1
-            bw: 2
-    """)
-    cfg = Config(dic1, dic2)
-
-    assert cfg['test'] == 2
-    assert cfg['hmm'] == 3
-    assert len(cfg['a']) == 3
-    assert len(cfg['b']) == 2
-    assert cfg['a']['w'] == 8
-    assert cfg['a']['c'] == 6
