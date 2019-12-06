@@ -66,10 +66,14 @@ class Config:
         self._keydic = {}
         build_keydic(self._cfg, '', self._keydic)
 
-    def argv_update(self, argv):
+    def argv_update(self, argv=None):
         """ parse argv & update self._cfg
         argv structure: [option1, value1, option2, value2, ...]
         """
+        if not argv:
+            import sys
+            argv = sys.argv[1:]
+
         N = len(argv)
         assert N % 2 == 0, "Key-value should be paired"
 
