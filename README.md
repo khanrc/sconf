@@ -32,7 +32,7 @@ cfg.argv_update()  # apply CLI modification
 ```
 
 
-#### Init with argparse
+#### Init with argparse and multiple configs
 
 ```py
 import sys
@@ -45,6 +45,7 @@ parser.add_argument("config_paths", nargs="*")
 parser.add_argument("--show", action="store_true", default=False)
 args, left_argv = parser.parse_known_args()
 
+# merging multiple configs if given
 cfg = Config(*args.config_paths, default="configs/defaults.yaml")
 cfg.argv_update(left_argv)
 ```
@@ -80,33 +81,34 @@ function(**cfg['model'])
 
 ### CLI modification
 
-- Modify values like argparse
-- Access to the child key using dot
-- 
+sconf supports CLI modification like argparse. Also you can access to the child key using dot.
+
+yaml example:
+
+```
+batch_size: 64
+model:
+    encoder:
+        n_channels: 64
+    decoder:
+        n_channels: 64
+```
+
+CLI modification:
 
 ```
 > python train.py --batch_size 128 --model.encoder.n_channels 32
 ```
 
-#### Extensions
-
-- Partial key modification
-    - The key should be unique
+Accessing via partial key is also available:
 
 ```
-# do not need to use full key
-> python train.py --n_channels 32
+> python train.py --encoder.n_channels 32
 ```
 
-- Multiple modification using triple dashs: `---`
+Use triple dashs `---` if you want to modify multiple keys:
 
 ```
-# for example, there are two `n_channels` keys for encoder and decoder:
-# model:
-#   encoder:
-#     n_channels: 64
-#   decoder:
-#     n_channels: 64
-
+# modifying encoder.n_channels and decoder.n_channels both.
 > python train.py ---n_channels 32
 ```
