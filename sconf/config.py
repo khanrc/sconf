@@ -2,8 +2,6 @@ import io
 from ruamel.yaml import YAML
 from .utils import colorize, type_infer, kv_iter, add_repr_to_yaml
 
-yaml = YAML()
-
 
 class Config:
     def __init__(self, *keys, default=None, colorize_modified_item=True):
@@ -13,13 +11,17 @@ class Config:
             default (str, dict): default key
             colorize_modified_item (bool)
         """
+        self._yaml = YAML()
         self.colorize_modified_item = colorize_modified_item
 
         if default:
             self._cfg = self._load(default)
         else:
-            self._cfg = self._load(keys[0])
-            keys = keys[1:]
+            if keys:
+                self._cfg = self._load(keys[0])
+                keys = keys[1:]
+            else:
+                self._cfg = {}
 
         for key in keys:
             self._dict_update(self._load(key))
@@ -27,14 +29,11 @@ class Config:
         self._build_keydic()
         self._modified = {}
 
-    @staticmethod
-    def _load(key):
-        if key is None:
-            return {}
-        elif isinstance(key, dict):
+    def _load(self, key):
+        if isinstance(key, dict):
             return key
         elif isinstance(key, str):
-            return yaml.load(open(key))
+            return self._yaml.load(open(key))
         else:
             raise ValueError()
 
@@ -140,9 +139,9 @@ class Config:
 
         return ret
 
-    def yaml(self):
+    def yamls(self):
         out = io.StringIO()
-        yaml.dump(self._cfg, out)
+        self._yaml.dump(self._cfg, out)
         return out.getvalue().strip()
 
     def dumps(self, modified_color=36, quote_str=False):
@@ -195,13 +194,17 @@ class Config:
                     dump(v, indent + tab, skip_first_indent)
 
         dump(self._cfg, '')
+        strs[-1] = strs[-1].rstrip('\n')  # remove last newline
         return ''.join(strs)
 
     def get(self, *args, **kwargs):
         return self._cfg.get(*args, **kwargs)
 
-    def __repr__(self):
+    def __str__(self):
         return str(self._cfg)
+
+    def __repr__(self):
+        return repr(self._cfg)
 
     def __getitem__(self, key):
         return self._cfg[key]
@@ -215,15 +218,14 @@ class Config:
     def __len__(self):
         return len(self._cfg)
 
-    @staticmethod
-    def add_yaml_repr(add_cls, tag, instance_repr_fn=str):
+    def add_yaml_repr(self, add_cls, tag, instance_repr_fn=str):
         """ Add yaml representation
         If you use custom class, including python builtin, you should specify
-        the representation for the `yaml()` dumping function.
+        the representation for the `yamls()` dumping function.
 
         Args:
             add_cls: adding class to yaml representation
             tag: representation tag
             instance_repr_fn: instance representor function
         """
-        add_repr_to_yaml(yaml, add_cls, tag, instance_repr_fn)
+        add_repr_to_yaml(self._yaml, add_cls, tag, instance_repr_fn)

@@ -10,13 +10,13 @@ def colorize(s, color):
 
 def dump_args(args):
     """ Convert args (argparse.Namespace) to printable string """
-    s = ""
+    lines = []
     key_len = max(map(len, vars(args).keys()))
     for attr, value in vars(args).items():
         line = "{:{key_len}s} = {}".format(attr, value, key_len=key_len)
-        s += line + "\n"
+        lines.append(line)
 
-    return s.rstrip("\n")
+    return "\n".join(lines)
 
 
 def type_infer(s):
