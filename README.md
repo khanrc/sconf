@@ -83,9 +83,8 @@ function(**cfg['model'])
 
 sconf supports CLI modification like argparse. Also you can access to the child key using dot.
 
-yaml example:
-
 ```
+# yaml example: configs/defaults.yaml
 batch_size: 64
 model:
     encoder:
@@ -94,19 +93,19 @@ model:
         n_channels: 64
 ```
 
-CLI modification:
+- CLI modification:
 
 ```
 > python train.py --batch_size 128 --model.encoder.n_channels 32
 ```
 
-Accessing via partial key is also available:
+- Accessing via partial key is also available:
 
 ```
 > python train.py --encoder.n_channels 32
 ```
 
-Use triple dashs `---` if you want to modify multiple keys:
+- Use triple dashs `---` if you want to modify multiple keys:
 
 ```
 # modifying encoder.n_channels and decoder.n_channels both.
