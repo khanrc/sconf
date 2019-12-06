@@ -60,7 +60,7 @@ sconf has two dumping methods, `dumps` and `yaml`. `dumps` return colorized cont
 print(cfg.dumps())
 
 # dump with comments
-print(cfg.yaml())
+print(cfg.yamls())
 ```
 
 ### Access
