@@ -84,7 +84,7 @@ function(**cfg['model'])
 sconf supports CLI modification like argparse. Also you can access to the child key using dot.
 
 ```
-# yaml example: configs/defaults.yaml
+# configs/defaults.yaml
 batch_size: 64
 model:
     encoder:
