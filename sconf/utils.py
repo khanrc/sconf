@@ -2,11 +2,14 @@ import ast
 
 
 def colorize(s, color):
+    if color is None:
+        return s
+
     return "\033[{}m{}\033[0m".format(color, s)
 
 
 def dump_args(args):
-    """ Convert args (namedtuple) to printable string """
+    """ Convert args (argparse.Namespace) to printable string """
     s = ""
     key_len = max(map(len, vars(args).keys()))
     for attr, value in vars(args).items():
