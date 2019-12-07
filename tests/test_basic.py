@@ -5,6 +5,34 @@ from sconf import Config
 yaml = YAML()
 
 
+def test_eq():
+    dic = yaml.load("""
+        test: 1
+        hmm: 2
+        a:
+            q: 1
+            w: 2
+    """)
+    cfg = Config(dic)
+
+    assert cfg == {
+        'test': 1,
+        'hmm': 2,
+        'a': {
+            'q': 1,
+            'w': 2
+        }
+    }
+    assert cfg != {
+        'test': 1,
+        'hmm': 2,
+        'a': {
+            'q': 2,
+            'w': 2
+        }
+    }
+
+
 def test_len():
     dic = yaml.load("""
         test: 1
@@ -62,8 +90,8 @@ def test_str_repr():
     """)
     cfg = Config(dic)
 
-    assert repr(cfg) == repr(cfg._cfg)
-    assert str(cfg) == str(cfg._cfg)
+    assert repr(cfg) == repr(cfg.data)
+    assert str(cfg) == str(cfg.data)
 
 
 def test_modify():

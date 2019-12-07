@@ -79,7 +79,7 @@ def test_representor():
     cfg['test'] = Path(cfg['test'])
     cfg['hmm'] = Path(cfg['hmm'])
 
-    cfg.add_yaml_repr(Path, 'path')
+    Config.add_yaml_repr(Path, 'path')
     assert cfg.yamls() == "# comment\ntest: !<path> a/b/c\nhmm: !<path> c/d/e"
 
 
