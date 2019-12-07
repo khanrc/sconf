@@ -1,0 +1,33 @@
+name: coverage
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Python  
+      uses: actions/setup-python@master
+      with:
+        python-version: 3.6
+    - name: Generate coverage report
+      run: |
+        pip install pytest
+        pip install pytest-cov
+        python -m pytest --cov=./sconf/ ./tests/ --cov-report=xml
+    - name: Upload the coverage report to the Codecov
+      uses: codecov/codecov-action@v1.0.5
+      with:
+        # User defined upload name. Visible in Codecov UI
+        name: sconf-coverage
+        # Repository upload token - get it from codecov.io
+        token: ${{ secrets.CODECOV_TOKEN }}
+        # Path to coverage file to upload
+        file: ./coverage.xml
+        # Flag upload to group coverage metrics (e.g. unittests | integration | ui,chrome)
+        flags: unittests
+        # Specify the location of the .codecov.yml config file
+        #yml: # optional
+        # Specify whether or not CI build should fail if Codecov runs into an error during upload
+        fail_ci_if_error: true
