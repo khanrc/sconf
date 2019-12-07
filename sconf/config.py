@@ -1,9 +1,16 @@
+import sys
 import io
+from pathlib import Path
+
 from ruamel.yaml import YAML
+
+from .container import DictContainer
 from .utils import colorize, type_infer, kv_iter, add_repr_to_yaml
 
 
-class Config:
+class Config(DictContainer):
+    _yaml = YAML()
+
     def __init__(self, *keys, default=None, colorize_modified_item=True):
         """
         Args:
@@ -11,17 +18,15 @@ class Config:
             default (str, dict): default key
             colorize_modified_item (bool)
         """
-        self._yaml = YAML()
+        super().__init__()
         self.colorize_modified_item = colorize_modified_item
 
         if default:
-            self._cfg = self._load(default)
-        else:
-            if keys:
-                self._cfg = self._load(keys[0])
-                keys = keys[1:]
-            else:
-                self._cfg = {}
+            keys = (default,) + keys
+
+        if keys:
+            self.data = self._load(keys[0])
+            keys = keys[1:]
 
         for key in keys:
             self._dict_update(self._load(key))
@@ -32,13 +37,13 @@ class Config:
     def _load(self, key):
         if isinstance(key, dict):
             return key
-        elif isinstance(key, str):
+        elif isinstance(key, (str, Path)):
             return self._yaml.load(open(key))
         else:
             raise ValueError()
 
     def _dict_update(self, dic):
-        """ update self._cfg from dic - support nested dic """
+        """ update self.data from dic - support nested dic """
         def merge(base, supp):
             """ Merge supplementary dict into base dict """
             for k in supp.keys():
@@ -49,7 +54,7 @@ class Config:
                     base[k] = supp[k]
 
         if dic is not None:
-            merge(self._cfg, dic)
+            merge(self.data, dic)
 
     def _build_keydic(self):
         """ Build key dictionary; keydic[abs_key] = lastdic """
@@ -65,15 +70,14 @@ class Config:
                     keydic[key] = data
 
         self._keydic = {}
-        build_keydic(self._cfg, '', self._keydic)
+        build_keydic(self.data, '', self._keydic)
 
     def argv_update(self, argv=None):
-        """ Update self._cfg using argv
+        """ Update self.data using argv
         argv structure: [option1, value1, option2, value2, ...]
         If argv is not given, use sys.argv[1:] as default.
         """
         if not argv:
-            import sys
             argv = sys.argv[1:]
 
         N = len(argv)
@@ -86,7 +90,7 @@ class Config:
         self._build_keydic()
 
     def _update(self, flat_key, value):
-        """ Update self._cfg using flat_key and value
+        """ Update self.data using flat_key and value
 
         Args:
             flat_key: hierarchical flat key with:
@@ -141,7 +145,7 @@ class Config:
 
     def yamls(self):
         out = io.StringIO()
-        self._yaml.dump(self._cfg, out)
+        Config._yaml.dump(self.data, out)
         return out.getvalue().strip()
 
     def dumps(self, modified_color=36, quote_str=False):
@@ -163,7 +167,7 @@ class Config:
                 v = ''
             return "{}: {}\n".format(k, quote(v))
 
-        def repr_list(k, v):
+        def repr_list(_k, v):
             if isinstance(v, (dict, list)):
                 return "- "
             return "- {}\n".format(quote(v))
@@ -193,32 +197,12 @@ class Config:
                 if isinstance(v, (dict, list)):
                     dump(v, indent + tab, skip_first_indent)
 
-        dump(self._cfg, '')
+        dump(self.data, '')
         strs[-1] = strs[-1].rstrip('\n')  # remove last newline
         return ''.join(strs)
 
-    def get(self, *args, **kwargs):
-        return self._cfg.get(*args, **kwargs)
-
-    def __str__(self):
-        return str(self._cfg)
-
-    def __repr__(self):
-        return repr(self._cfg)
-
-    def __getitem__(self, key):
-        return self._cfg[key]
-
-    def __setitem__(self, key, value):
-        self._cfg[key] = value
-
-    def __contains__(self, key):
-        return key in self._cfg
-
-    def __len__(self):
-        return len(self._cfg)
-
-    def add_yaml_repr(self, add_cls, tag, instance_repr_fn=str):
+    @staticmethod
+    def add_yaml_repr(add_cls, tag, instance_repr_fn=str):
         """ Add yaml representation
         If you use custom class, including python builtin, you should specify
         the representation for the `yamls()` dumping function.
@@ -228,4 +212,4 @@ class Config:
             tag: representation tag
             instance_repr_fn: instance representor function
         """
-        add_repr_to_yaml(self._yaml, add_cls, tag, instance_repr_fn)
+        add_repr_to_yaml(Config._yaml, add_cls, tag, instance_repr_fn)
