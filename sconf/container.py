@@ -27,3 +27,12 @@ class DictContainer:
 
     def __eq__(self, other):
         return self.data == other
+
+    def items(self):
+        return self.data.items()
+
+    def keys(self):
+        return self.data.keys()
+
+    def values(self):
+        return self.data.values()

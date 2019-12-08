@@ -1,5 +1,6 @@
 import sys
 import io
+import copy
 from pathlib import Path
 
 from ruamel.yaml import YAML
@@ -36,7 +37,7 @@ class Config(DictContainer):
 
     def _load(self, key):
         if isinstance(key, dict):
-            return key
+            return copy.deepcopy(key)
         elif isinstance(key, (str, Path)):
             return self._yaml.load(open(key))
         else:
@@ -57,17 +58,13 @@ class Config(DictContainer):
             merge(self.data, dic)
 
     def _build_keydic(self):
-        """ Build key dictionary; keydic[abs_key] = lastdic """
+        """ Build key dictionary; keydic[flat_key] = lastdic """
         def build_keydic(data, prefix, keydic):
-            #  for k, v in dic.items():
             for k, v in kv_iter(data):
                 key = "{}.{}".format(prefix, k)
+                keydic[key] = data
                 if isinstance(v, (dict, list)):
-                    # non-leaf node
                     build_keydic(v, key, keydic)
-                else:
-                    # leaf node
-                    keydic[key] = data
 
         self._keydic = {}
         build_keydic(self.data, '', self._keydic)
@@ -93,7 +90,7 @@ class Config(DictContainer):
         """ Update self.data using flat_key and value
 
         Args:
-            flat_key: hierarchical flat key with:
+            flat_key: hierarchical (partial) flat key with:
                 "--": must single-match
                 "---": allow multi-match
                 e.g.) "--model.n_layers" or "---self_attention"
@@ -116,6 +113,8 @@ class Config(DictContainer):
         for last in lasts:
             if isinstance(last, list):
                 key = int(key)
+                if key == len(last):
+                    last.append(None)  # extend list
             last[key] = type_infer(value)
 
             if self.colorize_modified_item:
