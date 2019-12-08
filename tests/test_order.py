@@ -1,52 +1,32 @@
 import pytest
-from ruamel.yaml import YAML
 from sconf import Config
 
-yaml = YAML()
+
+def test_order(train_cfg):
+    assert list(train_cfg.keys()) == ['lr', 'batch_size', 'model', 'optim', 'betas']
+    assert list(train_cfg['model'].keys()) == ['encoder', 'decoder']
 
 
-def test_order():
-    dic = yaml.load("""
-        a: 1
-        b: 2
-        c:
-            q: 1
-            w: 2
-    """)
-    cfg = Config(dic)
-
-    assert list(dic.keys()) == ['a', 'b', 'c']
-    assert list(dic['c'].keys()) == ['q', 'w']
+def test_modified_order(train_cfg):
+    train_cfg['batch_size'] = 64
+    train_cfg['lr'] = 0.1
+    assert list(train_cfg.keys()) == ['lr', 'batch_size', 'model', 'optim', 'betas']
 
 
-def test_modified_order():
-    dic = yaml.load("""
-        a: 1
-        b: 2
-        c:
-            q: 1
-            w: 2
-    """)
-    cfg = Config(dic)
+def test_newkey_order(train_cfg):
+    train_cfg['steps'] = 10000
+    train_cfg['model']['encoder']['kernel_size'] = 5
 
-    dic['b'] = 3
-
-    assert list(dic.keys()) == ['a', 'b', 'c']
+    assert list(train_cfg.keys()) == ['lr', 'batch_size', 'model', 'optim', 'betas', 'steps']
+    assert list(train_cfg['model']['encoder'].keys()) == ['n_channels', 'kernel_size']
 
 
-def test_newkey_order():
-    dic = yaml.load("""
-        a: 1
-        b: 2
-        c:
-            q: 1
-            w: 2
-    """)
-    cfg = Config(dic)
+def test_merge_order(train_dic, data_dic):
+    cfg = Config(train_dic, data_dic)
+    cfg_reverse = Config(data_dic, train_dic)
 
-    dic['b'] = 3
-    dic['d'] = 1
-    dic['c']['a'] = 0
+    # same content
+    assert dict(cfg) == dict(cfg_reverse)
 
-    assert list(dic.keys()) == ['a', 'b', 'c', 'd']
-    assert list(dic['c'].keys()) == ['q', 'w', 'a']
+    # different order
+    assert list(cfg.keys()) != list(cfg_reverse.keys())

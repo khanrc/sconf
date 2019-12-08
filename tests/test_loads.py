@@ -5,42 +5,23 @@ from sconf import Config
 yaml = YAML()
 
 
-def test_load_from_dict():
-    dic = yaml.load("""
-        test: 1
-        hmm: 2
-        a:
-            q: 1
-            w: 2
-    """)
-    cfg = Config(dic)
+def test_load_from_filepath(tmp_path, train_dic, train_cfg, data_dic, data_cfg, merge_cfg):
+    train_path = tmp_path / 'train.yaml'
+    data_path = tmp_path / 'data.yaml'
+    yaml.dump(train_dic, train_path)
+    yaml.dump(data_dic, data_path)
 
-    assert cfg == {
-        'test': 1,
-        'hmm': 2,
-        'a': {
-            'q': 1,
-            'w': 2
-        }
-    }
-    assert len(cfg) == 3
+    cfg = Config(train_path)
+    assert train_cfg == cfg
 
+    cfg = Config(data_path)
+    assert data_cfg == cfg
 
-def test_load_from_filepath(tmp_path):
-    data = {
-        'test': 1,
-        'hmm': 2,
-        'a': {
-            'q': 1,
-            'w': 2
-        }
-    }
-    path = tmp_path / 'test.yaml'
-    yaml.dump(data, path)
+    cfg = Config(train_path, data_path)
+    assert merge_cfg == cfg
 
-    cfg = Config(path)
-
-    assert cfg == data
+    cfg = Config(data_path, default=train_path)
+    assert merge_cfg == cfg
 
 
 def test_wrong_key():
@@ -50,53 +31,10 @@ def test_wrong_key():
     assert isinstance(excinfo.value, ValueError)
 
 
-def test_list():
-    dic = yaml.load("""
-        b:
-            - 1
-            - 2
-            - 3
-        c:
-            - a: 10
-              b: 10
-            - q: 20
-              w: 20
-    """)
-    cfg = Config(dic)
-
-    assert cfg == {
-        'b': [1,2,3],
-        'c': [
-            {'a': 10, 'b': 10},
-            {'q': 20, 'w': 20}
-        ]
-    }
-
-
 def test_empty():
     cfg = Config()
     assert len(cfg) == 0
     assert not cfg
-
-
-def test_default():
-    dic = yaml.load("""
-        test: 1
-        hmm: 2
-        a:
-            q: 1
-            w: 2
-    """)
-    cfg = Config(default=dic)
-
-    assert cfg == {
-        'test': 1,
-        'hmm': 2,
-        'a': {
-            'q': 1,
-            'w': 2
-        }
-    }
 
 
 def test_merge():

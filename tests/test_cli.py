@@ -1,80 +1,44 @@
 import pytest
 from unittest import mock
-from ruamel.yaml import YAML
-from sconf import Config
-
-yaml = YAML()
 
 
-def test_list():
-    dic = yaml.load("""
-        list:
-            - 1
-            - 2
-            - dic: 10
-              con: hi
-    """)
-    cfg = Config(dic)
-    cfg.argv_update([
-        '--list.0', '10',
-        '--list.2.dic', '20',
-        '--2.con', '30'
+def test_cli(train_cfg, data_cfg):
+    train_cfg.argv_update([
+        '--lr', '0.1',
+        '--batch_size', '64',
+        '--betas.0', '0.'
+    ])
+    data_cfg.argv_update([
+        '--ignore_list.0.value', '1.2',
+        '--1.value', '1.3',
+        '--ignore_list.2', 3
     ])
 
-    assert cfg['list'][0] == 10
-    assert cfg['list'][1] == 2
-    assert cfg['list'][2]['dic'] == 20
-    assert cfg['list'][2]['con'] == 30
+    assert train_cfg['lr'] == 0.1
+    assert train_cfg['batch_size'] == 64
+    assert train_cfg['betas'][0] == 0.
+    assert data_cfg['ignore_list'][0]['value'] == 1.2
+    assert data_cfg['ignore_list'][1]['value'] == 1.3
+    assert data_cfg['ignore_list'][2] == 3
 
 
-def test_dic():
-    dic = yaml.load("""
-        batch_size: 128
-        optim: adam
-        model:
-            encoder:
-                C: 64
-                norm: IN
-            decoder:
-                C: 64
-                norm: BN
-    """)
-    cfg = Config(dic)
-    cfg.argv_update([
-        '--encoder.norm', 'BN',
-        '--decoder.norm', 'IN',
-        '---C', '32'
-    ])
-
-    assert cfg['model']['encoder']['C'] == 32
-    assert cfg['model']['decoder']['C'] == 32
-    assert cfg['model']['encoder']['norm'] == 'BN'
-    assert cfg['model']['decoder']['norm'] == 'IN'
-
-
-def test_default_argv():
-    dic = yaml.load("""
-        batch_size: 128
-        optim: adam
-        model:
-            encoder:
-                C: 64
-                norm: IN
-            decoder:
-                C: 64
-                norm: BN
-    """)
-    cfg = Config(dic)
+def test_default_argv(train_cfg):
     argv = [
         'train.py',
         '--encoder.norm', 'BN',
         '--decoder.norm', 'IN',
-        '---C', '32'
+        '---n_channels', '32'
     ]
     with mock.patch('sys.argv', argv):
-        cfg.argv_update()
+        train_cfg.argv_update()
 
-    assert cfg['model']['encoder']['C'] == 32
-    assert cfg['model']['decoder']['C'] == 32
-    assert cfg['model']['encoder']['norm'] == 'BN'
-    assert cfg['model']['decoder']['norm'] == 'IN'
+    assert train_cfg['model'] == {
+        'encoder': {
+            'n_channels': 32,
+            'norm': 'BN'
+        },
+        'decoder': {
+            'n_channels': 32,
+            'norm': 'IN'
+        }
+    }
