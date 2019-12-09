@@ -1,3 +1,4 @@
+import argparse
 import pytest
 from unittest import mock
 
@@ -42,3 +43,33 @@ def test_default_argv(train_cfg):
             'norm': 'IN'
         }
     }
+
+
+def test_with_argparse_noleft(train_cfg, train_dic):
+    parser = argparse.ArgumentParser('Test')
+    parser.add_argument('name')
+    parser.add_argument('config_paths', nargs='+')
+    parser.add_argument('--show', default=False, action='store_true')
+
+    argv = ['train.py', 'test', 'configs/test.yaml', '--show']
+    with mock.patch('sys.argv', argv):
+        args, left_argv = parser.parse_known_args()
+        train_cfg.argv_update(left_argv)
+
+    assert dict(train_cfg) == dict(train_dic)
+
+
+def test_with_argparse(train_cfg, train_dic):
+    parser = argparse.ArgumentParser('Test')
+    parser.add_argument('name')
+    parser.add_argument('config_paths', nargs='+')
+    parser.add_argument('--show', default=False, action='store_true')
+
+    argv = ['train.py', 'test', 'configs/test.yaml', '--lr', '0.1', '--batch_size', '64']
+    with mock.patch('sys.argv', argv):
+        args, left_argv = parser.parse_known_args()
+        train_cfg.argv_update(left_argv)
+
+    train_dic['lr'] = 0.1
+    train_dic['batch_size'] = 64
+    assert dict(train_cfg) == dict(train_dic)

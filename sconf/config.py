@@ -74,7 +74,7 @@ class Config(DictContainer):
         argv structure: [option1, value1, option2, value2, ...]
         If argv is not given, use sys.argv[1:] as default.
         """
-        if not argv:
+        if argv is None:
             argv = sys.argv[1:]
 
         N = len(argv)
