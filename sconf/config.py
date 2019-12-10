@@ -78,7 +78,8 @@ class Config(DictContainer):
             argv = sys.argv[1:]
 
         N = len(argv)
-        assert N % 2 == 0, "Key-value should be paired"
+        if N % 2 != 0:
+            raise ValueError("Key-value should be paired, but given argv = {}".format(argv))
 
         for i in range(0, N, 2):
             flat_key, value = argv[i:i+2]
@@ -99,16 +100,16 @@ class Config(DictContainer):
         index = 0
         while flat_key[index] == '-':
             index += 1
-        assert index in [2, 3], "Key should have `--` or `---` prefix"
+        if index not in {2, 3}:
+            raise ValueError("Key should have `--` or `---` prefix, but {}".format(flat_key))
         flat_key = flat_key[index:]
 
         lasts = self._find_lastdic(flat_key)
         key = flat_key.split('.')[-1]
 
         # single match case
-        if index == 2:
-            assert len(lasts) == 1, "-- option should match to single item, but {}".format(
-                len(lasts))
+        if index == 2 and len(lasts) != 1:
+            raise ValueError("-- key should match to only single item, but {}".format(len(lasts)))
 
         for last in lasts:
             if isinstance(last, list):
