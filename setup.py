@@ -1,17 +1,13 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import setuptools
 
 
-VERSION = '0.1'
-
-
+LONG_DESC = open("README.md").read()
 setuptools.setup(
     name='sconf',
-    version=VERSION,
+    version='0.1.1',
     description='Simple config supporting CLI modification',
+    long_description=LONG_DESC,
+    long_description_content_type="text/markdown",
     install_requires=[
         'ruamel.yaml'
     ],
@@ -21,5 +17,10 @@ setuptools.setup(
     license='MIT',
     packages=['sconf'],
     python_requires=">=3.6",
-    tests_require=["pytest"]
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
+    ]
 )

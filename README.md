@@ -1,5 +1,6 @@
 ![](https://github.com/khanrc/sconf/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/khanrc/sconf/branch/master/graph/badge.svg)](https://codecov.io/gh/khanrc/sconf)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sconf)
 
 # sconf: Simple config supporting CLI modification
 
