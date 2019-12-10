@@ -1,8 +1,9 @@
 ![](https://github.com/khanrc/sconf/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/khanrc/sconf/branch/master/graph/badge.svg)](https://codecov.io/gh/khanrc/sconf)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sconf)
+![PyPI](https://img.shields.io/pypi/v/sconf)
 
-# sconf: Simple config supporting CLI modification
+# sconf: Simple config system supporting CLI modification
 
 sconf is yaml-based simple config library.
 
@@ -17,7 +18,7 @@ sconf is yaml-based simple config library.
 ## Install
 
 ```
-$ pip install git+https://github.com/khanrc/sconf
+$ pip install sconf
 ```
 
 ## Usage
