@@ -36,7 +36,6 @@ cfg.argv_update()  # apply CLI modification
 #### Init with argparse and multiple configs
 
 ```py
-import sys
 import argparse
 from sconf import Config
 
@@ -85,7 +84,7 @@ function(**cfg['model'])
 sconf supports CLI modification like argparse. Also you can access to the child key using dot.
 
 ```
-# configs/defaults.yaml
+# yaml example
 batch_size: 64
 model:
     encoder:
