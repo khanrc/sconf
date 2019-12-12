@@ -10,14 +10,16 @@ from .utils import colorize, type_infer, kv_iter, add_repr_to_yaml
 
 
 class Config(DictContainer):
+    """ Config container """
     _yaml = YAML()
 
     def __init__(self, *keys, default=None, colorize_modified_item=True):
         """
         Args:
-            keys (str, dict): yaml path or loaded dict
-            default (str, dict): default key
-            colorize_modified_item (bool)
+            keys (str or dict ...): yaml path or loaded dict
+            default (str or dict): default key. Default: ``None``
+            colorize_modified_item (bool): a flag for coloring modified items on dumps().
+                Default: ``True``
         """
         super().__init__()
         self.colorize_modified_item = colorize_modified_item
@@ -71,8 +73,13 @@ class Config(DictContainer):
 
     def argv_update(self, argv=None):
         """ Update self.data using argv
-        argv structure: [option1, value1, option2, value2, ...]
-        If argv is not given, use sys.argv[1:] as default.
+        Argument key has two key types, "--" and "---".
+        The double-dash key "--" is used to modify a single item, and
+        the triple-dash key "---" is used to modify multiple items at once.
+
+        Args:
+            argv (list): argument list; [key1, value1, key2, value2, ...]
+                Can be set to ``None`` to use sys.argv[1:]. Default: ``None``
         """
         if argv is None:
             argv = sys.argv[1:]
@@ -91,11 +98,11 @@ class Config(DictContainer):
         """ Update self.data using flat_key and value
 
         Args:
-            flat_key: hierarchical (partial) flat key with:
+            flat_key (str): hierarchical (partial) flat key with:
                 "--": must single-match
                 "---": allow multi-match
                 e.g.) "--model.n_layers" or "---self_attention"
-            value
+            value (str)
         """
         index = 0
         while flat_key[index] == '-':
@@ -144,15 +151,17 @@ class Config(DictContainer):
         return ret
 
     def yamls(self):
+        """ Dump with comments """
         out = io.StringIO()
         Config._yaml.dump(self.data, out)
         return out.getvalue().strip()
 
     def dumps(self, modified_color=36, quote_str=False):
         """ Dump to colorized string
+
         Args:
-            modified_color: color for modified item
-            quote_str: quoting string for identifying string and keyword
+            modified_color (int): color for modified item. Can be set to ``None`` for non-coloring
+            quote_str (bool): quoting string for identifying string with keyword. Default: ``False``
         """
         strs = []
         tab = '  '
@@ -208,8 +217,8 @@ class Config(DictContainer):
         the representation for the `yamls()` dumping function.
 
         Args:
-            add_cls: adding class to yaml representation
-            tag: representation tag
-            instance_repr_fn: instance representor function
+            add_cls (class): adding class to yaml representation
+            tag (str): representation tag
+            instance_repr_fn (method): instance representor function
         """
         add_repr_to_yaml(Config._yaml, add_cls, tag, instance_repr_fn)
