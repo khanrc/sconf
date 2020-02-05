@@ -116,7 +116,7 @@ class Config(DictContainer):
 
         # single match case
         if index == 2 and len(lasts) != 1:
-            raise ValueError("-- key should match to only single item, but {}".format(len(lasts)))
+            raise ValueError("-- key `{}` should match to only single item, but {}".format(flat_key, len(lasts)))
 
         for last in lasts:
             if isinstance(last, list):

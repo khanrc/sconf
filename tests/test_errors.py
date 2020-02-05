@@ -1,4 +1,5 @@
 import argparse
+import re
 import pytest
 
 
@@ -34,11 +35,11 @@ def test_wrong_multi_match(train_cfg):
     with pytest.raises(ValueError) as error:
         train_cfg.argv_update(['--n_channels', '32'])
 
-    assert str(error.value).startswith('-- key should match to only single item')
+    assert re.match(r'-- key `.+` should match to only single item, but \d+', str(error.value))
 
 
 def test_not_matched(train_cfg):
     with pytest.raises(ValueError) as error:
         train_cfg.argv_update(['--model.disc.n_channels', '32'])
 
-    assert str(error.value).startswith('-- key should match to only single item')
+    assert re.match(r'-- key `.+` should match to only single item, but \d+', str(error.value))
