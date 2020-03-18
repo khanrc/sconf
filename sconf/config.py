@@ -6,7 +6,9 @@ from pathlib import Path
 from ruamel.yaml import YAML
 
 from .container import DictContainer
-from .utils import colorize, type_infer, kv_iter, add_repr_to_yaml
+from .utils import colorize, kv_iter
+from .types import type_infer
+from .dumps import dump_config, add_repr_to_yaml
 
 
 class Config(DictContainer):
@@ -163,52 +165,7 @@ class Config(DictContainer):
             modified_color (int): color for modified item. Can be set to ``None`` for non-coloring
             quote_str (bool): quoting string for identifying string with keyword. Default: ``False``
         """
-        strs = []
-        tab = '  '
-
-        def quote(v):
-            if quote_str and isinstance(v, str) and v:
-                return "'{}'".format(v)
-            return v
-
-        def repr_dict(k, v):
-            if isinstance(v, (dict, list)):
-                v = ''
-            return "{}: {}\n".format(k, quote(v))
-
-        def repr_list(_k, v):
-            if isinstance(v, (dict, list)):
-                return "- "
-            return "- {}\n".format(quote(v))
-
-        def dump(data, indent, firstline_nopref=False):
-            modified = self._modified.get(id(data), set())
-
-            for k, v in kv_iter(data):
-                prefix = indent
-                if firstline_nopref:
-                    prefix = ''
-                    firstline_nopref = False
-
-                # representation is determined by parent data type
-                if isinstance(data, dict):
-                    s = repr_dict(k, v)
-                    skip_first_indent = False
-                elif isinstance(data, list):
-                    s = repr_list(k, v)
-                    skip_first_indent = True
-                else:
-                    raise ValueError(type(data))
-
-                if k in modified:
-                    s = colorize(s, modified_color)
-                strs.append(prefix + s)
-                if isinstance(v, (dict, list)):
-                    dump(v, indent + tab, skip_first_indent)
-
-        dump(self.data, '')
-        strs[-1] = strs[-1].rstrip('\n')  # remove last newline
-        return ''.join(strs)
+        return dump_config(self, modified_color, quote_str)
 
     @staticmethod
     def add_yaml_repr(add_cls, tag, instance_repr_fn=str):
