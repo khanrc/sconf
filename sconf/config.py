@@ -1,18 +1,14 @@
 import sys
 import io
-import copy
-from pathlib import Path
-
-from ruamel.yaml import YAML
 
 from .container import DictContainer
-from .utils import colorize, type_infer, kv_iter, add_repr_to_yaml
+from .utils import colorize, kv_iter
+from .types import type_infer
+from .dumps import dump_config
 
 
 class Config(DictContainer):
     """ Config container """
-    _yaml = YAML()
-
     def __init__(self, *keys, default=None, colorize_modified_item=True):
         """
         Args:
@@ -22,31 +18,24 @@ class Config(DictContainer):
                 Default: ``True``
         """
         super().__init__()
-        self.colorize_modified_item = colorize_modified_item
+        self._sconf_colorize_modified_item = colorize_modified_item
+        self._sconf_modified = {}
+        self._sconf_keydic = {}
 
         if default:
             keys = (default,) + keys
 
         if keys:
-            self.data = self._load(keys[0])
+            self.set_data_from_key(keys[0])
             keys = keys[1:]
 
         for key in keys:
-            self._dict_update(self._load(key))
+            self._dict_update(self._load_key(key))
 
         self._build_keydic()
-        self._modified = {}
-
-    def _load(self, key):
-        if isinstance(key, dict):
-            return copy.deepcopy(key)
-        elif isinstance(key, (str, Path)):
-            return self._yaml.load(open(key))
-        else:
-            raise ValueError()
 
     def _dict_update(self, dic):
-        """ update self.data from dic - support nested dic """
+        """ update data from dic - support nested dic """
         def merge(base, supp):
             """ Merge supplementary dict into base dict """
             for k in supp.keys():
@@ -57,7 +46,7 @@ class Config(DictContainer):
                     base[k] = supp[k]
 
         if dic is not None:
-            merge(self.data, dic)
+            merge(self.get_data(), dic)
 
     def _build_keydic(self):
         """ Build key dictionary; keydic[flat_key] = lastdic """
@@ -68,11 +57,11 @@ class Config(DictContainer):
                 if isinstance(v, (dict, list)):
                     build_keydic(v, key, keydic)
 
-        self._keydic = {}
-        build_keydic(self.data, '', self._keydic)
+        self._sconf_keydic = {}  # reset
+        build_keydic(self.get_data(), '', self._sconf_keydic)
 
     def argv_update(self, argv=None):
-        """ Update self.data using argv
+        """ Update data using argv
         Argument key has two key types, "--" and "---".
         The double-dash key "--" is used to modify a single item, and
         the triple-dash key "---" is used to modify multiple items at once.
@@ -95,7 +84,7 @@ class Config(DictContainer):
         self._build_keydic()
 
     def _update(self, flat_key, value):
-        """ Update self.data using flat_key and value
+        """ Update data using flat_key and value
 
         Args:
             flat_key (str): hierarchical (partial) flat key with:
@@ -125,8 +114,8 @@ class Config(DictContainer):
                     last.append(None)  # extend list
             last[key] = type_infer(value)
 
-            if self.colorize_modified_item:
-                self._modified.setdefault(id(last), set()).add(key)
+            if self._sconf_colorize_modified_item:
+                self._sconf_modified.setdefault(id(last), set()).add(key)
 
     def _find_lastdic(self, flat_key):
         """ Find parent dictionary of given flat_key """
@@ -137,7 +126,7 @@ class Config(DictContainer):
         key_parent = get_parentkey(key)
         ret = []
         cand = {}
-        for k, v in self._keydic.items():
+        for k, v in self._sconf_keydic.items():
             k_parent = get_parentkey(k)
             if k.endswith(key):
                 ret.append(v)
@@ -150,12 +139,6 @@ class Config(DictContainer):
 
         return ret
 
-    def yamls(self):
-        """ Dump with comments """
-        out = io.StringIO()
-        Config._yaml.dump(self.data, out)
-        return out.getvalue().strip()
-
     def dumps(self, modified_color=36, quote_str=False):
         """ Dump to colorized string
 
@@ -163,62 +146,4 @@ class Config(DictContainer):
             modified_color (int): color for modified item. Can be set to ``None`` for non-coloring
             quote_str (bool): quoting string for identifying string with keyword. Default: ``False``
         """
-        strs = []
-        tab = '  '
-
-        def quote(v):
-            if quote_str and isinstance(v, str) and v:
-                return "'{}'".format(v)
-            return v
-
-        def repr_dict(k, v):
-            if isinstance(v, (dict, list)):
-                v = ''
-            return "{}: {}\n".format(k, quote(v))
-
-        def repr_list(_k, v):
-            if isinstance(v, (dict, list)):
-                return "- "
-            return "- {}\n".format(quote(v))
-
-        def dump(data, indent, firstline_nopref=False):
-            modified = self._modified.get(id(data), set())
-
-            for k, v in kv_iter(data):
-                prefix = indent
-                if firstline_nopref:
-                    prefix = ''
-                    firstline_nopref = False
-
-                # representation is determined by parent data type
-                if isinstance(data, dict):
-                    s = repr_dict(k, v)
-                    skip_first_indent = False
-                elif isinstance(data, list):
-                    s = repr_list(k, v)
-                    skip_first_indent = True
-                else:
-                    raise ValueError(type(data))
-
-                if k in modified:
-                    s = colorize(s, modified_color)
-                strs.append(prefix + s)
-                if isinstance(v, (dict, list)):
-                    dump(v, indent + tab, skip_first_indent)
-
-        dump(self.data, '')
-        strs[-1] = strs[-1].rstrip('\n')  # remove last newline
-        return ''.join(strs)
-
-    @staticmethod
-    def add_yaml_repr(add_cls, tag, instance_repr_fn=str):
-        """ Add yaml representation
-        If you use custom class, including python builtin, you should specify
-        the representation for the `yamls()` dumping function.
-
-        Args:
-            add_cls (class): adding class to yaml representation
-            tag (str): representation tag
-            instance_repr_fn (method): instance representor function
-        """
-        add_repr_to_yaml(Config._yaml, add_cls, tag, instance_repr_fn)
+        return dump_config(self, modified_color, quote_str)
