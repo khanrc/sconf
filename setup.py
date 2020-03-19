@@ -9,7 +9,8 @@ setuptools.setup(
     long_description=LONG_DESC,
     long_description_content_type="text/markdown",
     install_requires=[
-        'ruamel.yaml'
+        'ruamel.yaml',
+        'munch'
     ],
     url='https://github.com/khanrc/sconf',
     author='khanrc',
