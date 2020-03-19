@@ -55,19 +55,18 @@ cfg.argv_update(left_argv)
 
 ### Dumps
 
-sconf has two dumping methods, `dumps` and `yaml`. `dumps` return colorized contents for modified items without comments and `yaml` return contents and comments without coloring.
+sconf dumps contents with coloring modified items.
 
 ```py
-# dump with coloring modified items
 print(cfg.dumps())
 
-# dump with comments
-print(cfg.yamls())
+# If you do not want to colorize:
+print(cfg.dumps(modified_color=None))
 ```
 
 ### Access
 
-sconf has same interface with dictionary:
+- Item access with dictionary-like interfaces:
 
 ```py
 # access
@@ -79,6 +78,22 @@ print(cfg.get('non-key', 'default-value'))
 
 # unpacking
 function(**cfg['model'])
+```
+
+- Attribute access:
+
+```
+print(cfg.key)
+print(cfg.key1.key2)
+```
+
+**Note** that sconf returns object method for the duplicated key.
+
+```
+cfg = Config({'get': 2})
+
+print(cfg['get'])  # 2
+print(cfg.get)  # method
 ```
 
 ### CLI modification

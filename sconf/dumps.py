@@ -17,7 +17,7 @@ def dump_config(config, modified_color=36, quote_str=False):
 
     Args:
         config (Config): config to dump
-        modified_color (int): color for modified item. Can be set to ``None`` for non-coloring
+        modified_color (int): color for modified item. Use ``None`` for non-coloring.
         quote_str (bool): quoting string for identifying string with keyword. Default: ``False``
     """
     strs = []
