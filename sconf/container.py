@@ -81,3 +81,19 @@ class DictContainer:
             )
 
         return munch.Munch.fromDict(dic)
+
+    def __getstate__(self):
+        return copy.deepcopy(self.__dict__)
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+    #  def __copy__(self):
+    #      new = type(self)()
+    #      new.__dict__.update(self.__dict__)
+    #      return new
+
+    def __deepcopy__(self, memo):
+        new = type(self)()
+        new.__dict__.update(copy.deepcopy(self.__dict__, memo))
+        return new
