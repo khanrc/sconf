@@ -12,19 +12,12 @@ def dump_args(args):
     return "\n".join(lines)
 
 
-def add_repr_to_yaml(yaml, cls, tag, instance_repr_fn=str):
-    def custom_repr(representer, instance):
-        return representer.represent_scalar(tag, instance_repr_fn(instance))
-
-    yaml.representer.add_multi_representer(cls, custom_repr)
-
-
 def dump_config(config, modified_color=36, quote_str=False):
     """ Dump to colorized string
 
     Args:
         config (Config): config to dump
-        modified_color (int): color for modified item. Can be set to ``None`` for non-coloring
+        modified_color (int): color for modified item. Use ``None`` for non-coloring.
         quote_str (bool): quoting string for identifying string with keyword. Default: ``False``
     """
     strs = []
@@ -46,7 +39,7 @@ def dump_config(config, modified_color=36, quote_str=False):
         return "- {}\n".format(quote(v))
 
     def dump(data, indent, firstline_nopref=False):
-        modified = config._modified.get(id(data), set())
+        modified = config._sconf_modified.get(id(data), set())
 
         for k, v in kv_iter(data):
             prefix = indent
@@ -70,5 +63,5 @@ def dump_config(config, modified_color=36, quote_str=False):
             if isinstance(v, (dict, list)):
                 dump(v, indent + tab, skip_first_indent)
 
-    dump(config.data, '')
+    dump(config.get_data(), '')
     return ''.join(strs).rstrip('\n')
