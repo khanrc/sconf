@@ -38,10 +38,11 @@ def dump_config(config, modified_color=36, quote_str=False):
             return "- "
         return "- {}\n".format(quote(v))
 
-    def dump(data, indent, firstline_nopref=False):
+    def dump(data, indent, last, firstline_nopref=False):
         modified = config._sconf_modified.get(id(data), set())
 
-        for k, v in kv_iter(data):
+        N = len(data)
+        for i, (k, v) in enumerate(kv_iter(data)):
             prefix = indent
             if firstline_nopref:
                 prefix = ''
@@ -57,11 +58,15 @@ def dump_config(config, modified_color=36, quote_str=False):
             else:
                 raise ValueError(type(data))
 
+            is_last = last and i == N-1
+            if is_last and not isinstance(v, (dict, list)):
+                s = s.rstrip('\n')
+
             if k in modified:
                 s = colorize(s, modified_color)
             strs.append(prefix + s)
             if isinstance(v, (dict, list)):
-                dump(v, indent + tab, skip_first_indent)
+                dump(v, indent + tab, is_last, skip_first_indent)
 
-    dump(config.get_data(), '')
-    return ''.join(strs).rstrip('\n')
+    dump(config.get_data(), '', True)
+    return ''.join(strs)
