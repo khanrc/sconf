@@ -2,37 +2,40 @@ class DictContainer:
     """ Dictionary container """
 
     def __init__(self, data=None):
-        self.data = data or {}
+        self._data = data or {}
 
     def get(self, *args, **kwargs):
-        return self.data.get(*args, **kwargs)
+        return self._data.get(*args, **kwargs)
 
     def __str__(self):
-        return str(self.data)
+        return str(self._data)
 
     def __repr__(self):
-        return repr(self.data)
+        return repr(self._data)
 
     def __getitem__(self, key):
-        return self.data[key]
+        return self._data[key]
 
     def __setitem__(self, key, value):
-        self.data[key] = value
+        self._data[key] = value
 
     def __contains__(self, key):
-        return key in self.data
+        return key in self._data
 
     def __len__(self):
-        return len(self.data)
+        return len(self._data)
 
     def __eq__(self, other):
-        return self.data == other
+        return self._data == other
 
     def items(self):
-        return self.data.items()
+        return self._data.items()
 
     def keys(self):
-        return self.data.keys()
+        return self._data.keys()
 
     def values(self):
-        return self.data.values()
+        return self._data.values()
+
+    def get_data(self):
+        return self._data

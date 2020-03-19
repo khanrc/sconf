@@ -70,5 +70,5 @@ def dump_config(config, modified_color=36, quote_str=False):
             if isinstance(v, (dict, list)):
                 dump(v, indent + tab, skip_first_indent)
 
-    dump(config.data, '')
+    dump(config.get_data(), '')
     return ''.join(strs).rstrip('\n')

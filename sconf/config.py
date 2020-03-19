@@ -30,7 +30,7 @@ class Config(DictContainer):
             keys = (default,) + keys
 
         if keys:
-            self.data = self._load(keys[0])
+            self._data = self._load(keys[0])
             keys = keys[1:]
 
         for key in keys:
@@ -48,7 +48,7 @@ class Config(DictContainer):
             raise ValueError()
 
     def _dict_update(self, dic):
-        """ update self.data from dic - support nested dic """
+        """ update self._data from dic - support nested dic """
         def merge(base, supp):
             """ Merge supplementary dict into base dict """
             for k in supp.keys():
@@ -59,7 +59,7 @@ class Config(DictContainer):
                     base[k] = supp[k]
 
         if dic is not None:
-            merge(self.data, dic)
+            merge(self._data, dic)
 
     def _build_keydic(self):
         """ Build key dictionary; keydic[flat_key] = lastdic """
@@ -71,10 +71,10 @@ class Config(DictContainer):
                     build_keydic(v, key, keydic)
 
         self._keydic = {}
-        build_keydic(self.data, '', self._keydic)
+        build_keydic(self.get_data(), '', self._keydic)
 
     def argv_update(self, argv=None):
-        """ Update self.data using argv
+        """ Update self._data using argv
         Argument key has two key types, "--" and "---".
         The double-dash key "--" is used to modify a single item, and
         the triple-dash key "---" is used to modify multiple items at once.
@@ -97,7 +97,7 @@ class Config(DictContainer):
         self._build_keydic()
 
     def _update(self, flat_key, value):
-        """ Update self.data using flat_key and value
+        """ Update self._data using flat_key and value
 
         Args:
             flat_key (str): hierarchical (partial) flat key with:
@@ -155,7 +155,7 @@ class Config(DictContainer):
     def yamls(self):
         """ Dump with comments """
         out = io.StringIO()
-        Config._yaml.dump(self.data, out)
+        Config._yaml.dump(self.get_data(), out)
         return out.getvalue().strip()
 
     def dumps(self, modified_color=36, quote_str=False):
