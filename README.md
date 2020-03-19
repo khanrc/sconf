@@ -87,7 +87,7 @@ print(cfg.key)
 print(cfg.key1.key2)
 ```
 
-**Note** that sconf returns object method for the duplicated key.
+- **Note** that the attribute access returns object method for the duplicated key, unlike the item access.
 
 ```
 cfg = Config({'get': 2})
