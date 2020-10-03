@@ -82,14 +82,14 @@ function(**cfg['model'])
 
 - Attribute access:
 
-```
+```py
 print(cfg.key)
 print(cfg.key1.key2)
 ```
 
 - **Note** that the attribute access returns object method for the duplicated key, unlike the item access.
 
-```
+```py
 cfg = Config({'get': 2})
 
 print(cfg['get'])  # 2
