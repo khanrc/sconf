@@ -11,7 +11,7 @@ sconf is yaml-based simple config library.
 ## Features
 
 - Supports merging multiple configs
-- Supports CLI modification
+- Supports CLI modification with argparse-like interface
 - Supports coloring modified key-values
 
 
@@ -23,17 +23,18 @@ $ pip install sconf
 
 ## Usage
 
-### Initialize
+### Quickstart
 
-#### Basic init
+#### A Minimal Example
 
 ```py
 from sconf import Config
 
-cfg = Config(default="configs/defaults.yaml")
+cfg = Config(default="configs/defaults.yaml")  # load yaml
 cfg.argv_update()  # apply CLI modification
 ```
 
+You can modify `cfg` by CLI in the runtime, with argparse-like interface.
 
 #### Init with argparse and multiple configs
 
@@ -52,6 +53,13 @@ cfg = Config(*args.config_paths, default="configs/defaults.yaml")
 cfg.argv_update(left_argv)
 ```
 
+Run:
+
+```
+python train.py example configs/exp.yaml --lr 0.1
+```
+
+The resulting `cfg` is based on `configs/defaults.yaml`, merged with `configs/exp.yaml`, and updated by `--lr 0.1`.
 
 ### Dumps
 
