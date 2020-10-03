@@ -14,6 +14,9 @@ class DictContainer:
     def get(self, *args, **kwargs):
         return self._sconf_data.get(*args, **kwargs)
 
+    def pop(self, *args, **kwargs):
+        return self._sconf_data.pop(*args, **kwargs)
+
     def __str__(self):
         return str(self._sconf_data.toDict())
 

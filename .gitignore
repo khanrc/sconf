@@ -1,3 +1,9 @@
 tags
 *.pyc
 __pycache__/
+.coverage
+.ipynb_checkpoints/
+*.ipynb
+*.egg-info
+dist/
+build/

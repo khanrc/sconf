@@ -25,6 +25,13 @@ def test_get(train_cfg):
     assert train_cfg.get('non-key', 'default') == 'default'
 
 
+def test_pop(train_cfg):
+    assert 'lr' in train_cfg
+    assert train_cfg.pop('lr') == 0.001
+    assert 'lr' not in train_cfg
+    assert train_cfg.pop('lr', 3e-4) == 3e-4
+
+
 def test_str_repr(train_cfg, train_dic):
     assert repr(train_cfg) == repr(train_dic)
     assert str(train_cfg) == str(train_dic)

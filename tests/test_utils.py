@@ -1,24 +1,22 @@
-from sconf import dump_args
+import pytest
+from sconf.utils import kv_iter
 
 
-def test_dump_args():
-    import argparse
-    parser = argparse.ArgumentParser("TEST")
-    parser.add_argument("a")
-    parser.add_argument("b")
-    parser.add_argument("--beta")
-    parser.add_argument("B")
-    parser.add_argument("AA")
-    parser.add_argument("--alpha")
+def test_kviter():
+    # test dict
+    dic = {'a': 1, 'b': 2}
+    iterator = kv_iter(dic)
+    assert ('a', 1) == next(iterator)
+    assert ('b', 2) == next(iterator)
 
-    args = parser.parse_args(args="1 2 3 4 --beta 5 --alpha 6".split())
-    dumps = dump_args(args)
+    # test list
+    lst = ['a', 'b']
+    iterator = kv_iter(lst)
+    assert (0, 'a') == next(iterator)
+    assert (1, 'b') == next(iterator)
 
-    assert dumps == "\n".join([
-        "a     = 1",
-        "b     = 2",
-        "beta  = 5",
-        "B     = 3",
-        "AA    = 4",
-        "alpha = 6"
-    ])
+    # test error (non-iterable)
+    with pytest.raises(ValueError) as excinfo:
+        kv_iter(1)
+
+    assert isinstance(excinfo.value, ValueError)

@@ -48,7 +48,7 @@ def dump_config(config, modified_color=36, quote_str=False):
                 prefix = ''
                 firstline_nopref = False
 
-            # representation is determined by parent data type
+            # indentation is determined by parent data type
             if isinstance(data, dict):
                 s = repr_dict(k, v)
                 skip_first_indent = False

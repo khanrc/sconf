@@ -10,6 +10,6 @@ def kv_iter(ds):
     if isinstance(ds, list):
         return enumerate(ds)
     elif isinstance(ds, dict):
-        return ds.items()
+        return iter(ds.items())
     else:
         raise ValueError(type(ds))
