@@ -5,17 +5,19 @@ from .container import DictContainer
 from .utils import colorize, kv_iter
 from .types import type_infer
 from .dumps import dump_config
+from . import registry
 
 
 class Config(DictContainer):
     """ Config container """
-    def __init__(self, *keys, default=None, colorize_modified_item=True):
+    def __init__(self, *keys, default=None, colorize_modified_item=True, registry_key='default'):
         """
         Args:
             keys (str or dict ...): yaml path or loaded dict
             default (str or dict): default key. Default: ``None``
             colorize_modified_item (bool): a flag for coloring modified items on dumps().
                 Default: ``True``
+            registry_key: every Config object is automatically registered
         """
         super().__init__()
         self._sconf_colorize_modified_item = colorize_modified_item
@@ -33,6 +35,13 @@ class Config(DictContainer):
             self._dict_update(self._load_key(key))
 
         self._build_keydic()
+
+        ignore_duplicated_error = registry_key == 'default'
+        registry.register(self, registry_key, ignore_duplicated_error)
+
+    @staticmethod
+    def from_registry(key='default'):
+        return registry.get(key)
 
     def _dict_update(self, dic):
         """ update data from dic - support nested dic """
