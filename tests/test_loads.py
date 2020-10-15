@@ -24,6 +24,17 @@ def test_load_from_filepath(tmp_path, train_dic, train_cfg, data_dic, data_cfg, 
     assert merge_cfg == cfg
 
 
+def test_loads(tmp_path, train_dic):
+    train_path = tmp_path / 'train.yaml'
+    yaml.dump(train_dic, train_path)
+
+    cfg_by_dic = Config(train_dic)
+    cfg_by_path = Config(train_path)
+    cfg_by_fp = Config(open(train_path, encoding='utf-8'))
+
+    assert cfg_by_dic == cfg_by_path == cfg_by_fp
+
+
 def test_wrong_key():
     with pytest.raises(ValueError) as excinfo:
         cfg = Config(123)

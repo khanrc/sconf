@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_eq(train_cfg, train_dic):
     assert train_cfg == train_dic
 

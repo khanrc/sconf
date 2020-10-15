@@ -3,7 +3,6 @@ import io
 import pytest
 from ruamel.yaml import YAML
 from sconf import Config
-from collections import OrderedDict
 
 yaml = YAML()
 

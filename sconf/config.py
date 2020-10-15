@@ -12,11 +12,11 @@ class Config(DictContainer):
     def __init__(self, *keys, default=None, colorize_modified_item=True, registry_key='default'):
         """
         Args:
-            keys (str or dict ...): yaml path or loaded dict
+            keys (str, dict, or fp ...): yaml path, loaded dict, or file pointer
             default (str or dict): default key. Default: ``None``
             colorize_modified_item (bool): a flag for coloring modified items on dumps().
                 Default: ``True``
-            registry_key: every Config object is automatically registered
+            registry_key (str): every Config object is automatically registered
         """
         super().__init__()
         self._sconf_colorize_modified_item = colorize_modified_item

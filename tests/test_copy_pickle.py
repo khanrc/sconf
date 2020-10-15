@@ -1,7 +1,7 @@
-import pytest
 import copy
 import pickle
 import tempfile
+import pytest
 from sconf import Config
 
 
@@ -24,7 +24,7 @@ def test_deepcopy(train_cfg):
     assert train_cfg.model.encoder.n_channels == 64
 
 
-# TODO for now (0.2.0), deepcopying sconf cannot preserve modified items,
+# TODO for now, deepcopying sconf cannot preserve modified items (text colors),
 # since it identify each key by its reference.
 #  def test_deepcopy_color(train_cfg):
 #      # test out-of-data attributes

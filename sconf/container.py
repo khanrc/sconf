@@ -1,3 +1,4 @@
+import io
 import copy
 from pathlib import Path
 import munch
@@ -78,6 +79,8 @@ class DictContainer:
             dic = copy.deepcopy(key)
         elif isinstance(key, (str, Path)):
             dic = self._yaml.load(open(key))
+        elif isinstance(key, io.IOBase):
+            dic = self._yaml.load(key)
         else:
             raise ValueError(
                 "Key should be dict, str, or pathlib.Path, but {} is given".format(type(key))
