@@ -4,7 +4,7 @@ import setuptools
 LONG_DESC = open("README.md").read()
 setuptools.setup(
     name='sconf',
-    version='0.2.1',
+    version='0.2.2',
     description='Simple config supporting CLI modification',
     long_description=LONG_DESC,
     long_description_content_type="text/markdown",
@@ -23,5 +23,6 @@ setuptools.setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8'
+        'Programming Language :: Python :: 3.9'
     ]
 )
