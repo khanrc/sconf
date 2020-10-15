@@ -13,6 +13,7 @@ sconf is yaml-based simple config library.
 - Supports merging multiple configs
 - Supports CLI modification with argparse-like interface
 - Supports coloring modified key-values
+- Supports global access to config objects
 
 
 ## Install
@@ -104,6 +105,7 @@ print(cfg['get'])  # 2
 print(cfg.get)  # method object
 ```
 
+
 ### CLI modification
 
 sconf supports CLI modification like argparse. Also you can access to the child key using dot.
@@ -136,3 +138,19 @@ model:
 # modifying encoder.n_channels and decoder.n_channels both.
 > python train.py ---n_channels 32
 ```
+
+
+### Global access to config object
+
+Global access is useful in ML project, even though it can be anti-pattern in SW engineering.
+
+```py
+# main.py
+cfg = Config({'weight_decay': 0.001})  # automatically registered first config to 'default' key
+
+# train.py
+cfg = Config.from_registry()  # get 'default' config
+print(cfg.weight_decay)  # 0.001
+```
+
+Note that `registry_key` helps global access to multiple configs.

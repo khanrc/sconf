@@ -32,7 +32,7 @@ def test_new_registration(train_cfg, data_cfg):
     assert data_cfg == cfg
 
 
-def test_duplicated_key(train_cfg, data_cfg):
+def test_duplicated_key(train_cfg):
     # the key 'data' is registered already in the last function.
     with pytest.raises(ValueError):
         registry.register(train_cfg, 'data')
