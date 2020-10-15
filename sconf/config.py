@@ -1,8 +1,7 @@
 import sys
-import io
 
 from .container import DictContainer
-from .utils import colorize, kv_iter
+from .utils import kv_iter
 from .types import type_infer
 from .dumps import dump_config
 from . import registry
