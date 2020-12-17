@@ -5,6 +5,13 @@ def test_eq(train_cfg, train_dic):
     assert train_cfg != train_dic
 
 
+def test_asdict(train_cfg, train_dic):
+    assert train_cfg.asdict() == train_dic
+    assert isinstance(train_cfg.asdict(), dict)
+    assert isinstance(train_cfg.asdict()["model"], dict)
+    assert isinstance(train_cfg.asdict()["model"]["encoder"], dict)
+
+
 def test_len(train_cfg):
     assert len(train_cfg) == 5
     assert len(train_cfg['betas']) == 2

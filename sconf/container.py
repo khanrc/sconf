@@ -18,11 +18,14 @@ class DictContainer:
     def pop(self, *args, **kwargs):
         return self._sconf_data.pop(*args, **kwargs)
 
+    def asdict(self):
+        return self._sconf_data.toDict()
+
     def __str__(self):
-        return str(self._sconf_data.toDict())
+        return str(self.asdict())
 
     def __repr__(self):
-        return repr(self._sconf_data.toDict())
+        return repr(self.asdict())
 
     def __getitem__(self, key):
         return self._sconf_data[key]
