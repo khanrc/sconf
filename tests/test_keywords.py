@@ -1,4 +1,3 @@
-import pytest
 from ruamel.yaml import YAML
 from sconf import Config
 
@@ -15,9 +14,9 @@ def test_true():
     """)
     cfg = Config(dic)
 
-    assert cfg['test'] == True
-    assert cfg['hmm'] == True
-    assert cfg['a']['q'] == True
+    assert cfg['test'] is True
+    assert cfg['hmm'] is True
+    assert cfg['a']['q'] is True
     assert cfg['a']['w'] == 'tRuE'
 
 
@@ -29,7 +28,7 @@ def test_false():
     """)
     cfg = Config(dic)
 
-    assert cfg['a'] == False
+    assert cfg['a'] is False
     assert cfg['b'] == 'FAlse'
     assert cfg['c'] == 'faLSE'
 
