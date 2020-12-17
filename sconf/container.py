@@ -67,7 +67,8 @@ class DictContainer:
         """ Set data from key
 
         Args:
-            key (dict, str, pathlib.Path): data dictionary or data path
+            key (dict, str, pathlib.Path, io.IOBase): data dictionary, data path,
+                or IOBase (file pointer)
         """
         data = self._load_key(key)
         self._sconf_data = data
@@ -76,12 +77,13 @@ class DictContainer:
         """ Load data from key
 
         Args:
-            key (dict, str, pathlib.Path): data dictionary or data path
+            key (dict, str, pathlib.Path, io.IOBase): data dictionary, data path,
+                or IOBase (file pointer)
         """
         if isinstance(key, dict):
             dic = copy.deepcopy(key)
         elif isinstance(key, (str, Path)):
-            dic = self._yaml.load(open(key))
+            dic = self._yaml.load(open(key, encoding="utf-8"))
         elif isinstance(key, io.IOBase):
             dic = self._yaml.load(key)
         else:
