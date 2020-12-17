@@ -108,16 +108,24 @@ class Config(DictContainer):
         index = 0
         while flat_key[index] == '-':
             index += 1
+
         if index not in {2, 3}:
             raise ValueError("Key should have `--` or `---` prefix, but {}".format(flat_key))
+
         flat_key = flat_key[index:]
 
         lasts = self._find_lastdic(flat_key)
         key = flat_key.split('.')[-1]
 
         # single match case
-        if index == 2 and len(lasts) != 1:
-            raise ValueError("-- key `{}` should match to only single item, but {}".format(flat_key, len(lasts)))
+        if index == 2:
+            if len(lasts) == 0:
+                raise ValueError(f"key `{flat_key}` do not match to any keys")
+
+            if len(lasts) >= 2:
+                raise ValueError(
+                    "key `{}` matches too many keys (#{})".format(flat_key, len(lasts))
+                )
 
         for last in lasts:
             if isinstance(last, list):
@@ -136,20 +144,20 @@ class Config(DictContainer):
 
         key = '.' + flat_key
         key_parent = get_parentkey(key)
-        ret = []
-        cand = {}
+        matches = []
+        candidates = {}
         for k, v in self._sconf_keydic.items():
             k_parent = get_parentkey(k)
             if k.endswith(key):
-                ret.append(v)
+                matches.append(v)
             elif k_parent.endswith(key_parent):
-                cand[k_parent] = v
+                candidates[k_parent] = v
 
         # add new argument
-        if not ret and len(cand) == 1:
-            return [cand.popitem()[1]]
+        if not matches and len(candidates) == 1:
+            return [candidates.popitem()[1]]
 
-        return ret
+        return matches
 
     def dumps(self, modified_color=36, quote_str=False):
         """ Dump to colorized string
