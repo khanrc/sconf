@@ -52,7 +52,6 @@ class Config(DictContainer):
             """ Merge supplementary dict into base dict """
             for k in supp.keys():
                 if isinstance(supp[k], dict) and k in base:
-                    assert isinstance(base[k], dict), "cannot update single value to dict"
                     merge(base[k], supp[k])
                 else:
                     base[k] = supp[k]

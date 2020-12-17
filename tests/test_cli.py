@@ -22,6 +22,18 @@ def test_cli(train_cfg, data_cfg):
     assert data_cfg['ignore_list'][2] == 3
 
 
+def test_insert_container_into_value(train_cfg):
+    lr = [1, 2, 3]
+    batch_size = {'a': 1, 'b': 2, 'c': 3}
+    train_cfg.argv_update([
+        '--lr', str(lr),
+        '--batch_size', str(batch_size)
+    ])
+
+    assert train_cfg.lr == lr
+    assert train_cfg.batch_size == batch_size
+
+
 def test_default_argv(train_cfg):
     argv = [
         'train.py',
