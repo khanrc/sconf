@@ -1,4 +1,5 @@
 import pytest
+import argparse
 from ruamel.yaml import YAML
 from sconf import Config, dump_args
 
@@ -57,7 +58,6 @@ def test_dumps_quote():
 
 
 def test_dump_args():
-    import argparse
     parser = argparse.ArgumentParser("TEST")
     parser.add_argument("a")
     parser.add_argument("b")
