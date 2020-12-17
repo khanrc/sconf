@@ -16,10 +16,10 @@ def test_true_cli():
     cfg = Config(dic)
     cfg.argv_update(['--test', 'true', '--hmm', 'True', '--a.q', 'trUE', '--a.w', 'TRUE'])
 
-    assert cfg['test'] == True
-    assert cfg['hmm'] == True
+    assert cfg['test'] is True
+    assert cfg['hmm'] is True
     assert cfg['a']['q'] == 'trUE'
-    assert cfg['a']['w'] == True
+    assert cfg['a']['w'] is True
 
 
 def test_false_cli():
@@ -31,9 +31,9 @@ def test_false_cli():
     cfg = Config(dic)
     cfg.argv_update(['--a', 'False', '--b', 'false', '--c', 'FALSE', '--d', 'Fals', '--e', 'FAlse'])
 
-    assert cfg['a'] == False
-    assert cfg['b'] == False
-    assert cfg['c'] == False
+    assert cfg['a'] is False
+    assert cfg['b'] is False
+    assert cfg['c'] is False
     assert cfg['d'] == 'Fals'
     assert cfg['e'] == 'FAlse'
 
