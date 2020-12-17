@@ -146,17 +146,16 @@ Global access is useful in ML project, even though it can be anti-pattern in SW 
 
 ```py
 # main.py
-cfg = Config({'weight_decay': 0.001})  # automatically registered first config to 'default' key
+cfg = Config({'weight_decay': 0.001})  # first config is automatically registered to 'default' key
 
 # train.py
-cfg = Config.from_registry()  # get 'default' config
+cfg = Config.get_default()  # get 'default' config
 print(cfg.weight_decay)  # 0.001
 ```
 
-Note that `registry_key` helps global access to multiple configs.
+Note `from_registry` helps global access to multiple configs.
 
 
 ## Note
 
 - sconf use utf-8 as a default encoding. If you want different encoding, use file pointer (`open` function) instead of file path as a key.
-

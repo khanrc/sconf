@@ -39,8 +39,12 @@ class Config(DictContainer):
         registry.register(self, registry_key, ignore_duplicated_error)
 
     @staticmethod
-    def from_registry(key='default'):
+    def from_registry(key):
         return registry.get(key)
+
+    @staticmethod
+    def get_default():
+        return Config.from_registry('default')
 
     def _dict_update(self, dic):
         """ update data from dic - support nested dic """

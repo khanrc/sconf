@@ -12,13 +12,13 @@ def test_reset():
 
 # train_cfg is default config in registry.
 def test_reg(train_cfg):
-    cfg = Config.from_registry()
+    cfg = Config.get_default()
 
     assert train_cfg == cfg
 
 
 def test_reg2(train_cfg, data_cfg):
-    cfg = Config.from_registry()
+    cfg = Config.get_default()
 
     assert train_cfg == cfg
     assert data_cfg != cfg
@@ -44,18 +44,18 @@ def test_duplicated_key(train_cfg):
 
 
 def test_modify_data():
-    cfg = Config.from_registry()
+    cfg = Config.get_default()
     assert cfg.lr == 0.001
     cfg.lr = 0.1
 
 
 def test_is_maintained():
-    cfg = Config.from_registry()
+    cfg = Config.get_default()
     assert cfg.lr == 0.1
 
 
 def test_is_diff_to_given(train_cfg):
-    cfg = Config.from_registry()
+    cfg = Config.get_default()
     assert train_cfg != cfg
     cfg.lr = 0.001
     assert train_cfg == cfg
