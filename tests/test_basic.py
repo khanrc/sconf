@@ -12,6 +12,15 @@ def test_asdict(train_cfg, train_dic):
     assert isinstance(train_cfg.asdict()["model"]["encoder"], dict)
 
 
+def test_load_asdict(load_cfg):
+    dic = load_cfg.asdict()
+    assert type(dic['lr']) == float
+
+    import json
+    dic = json.loads(json.dumps(load_cfg.asdict()))
+    assert dic == load_cfg.asdict()
+
+
 def test_len(train_cfg):
     assert len(train_cfg) == 5
     assert len(train_cfg['betas']) == 2

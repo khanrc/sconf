@@ -3,6 +3,10 @@ import copy
 from pathlib import Path
 import munch
 from ruamel.yaml import YAML
+from ruamel.yaml.scalarfloat import ScalarFloat
+from ruamel.yaml.scalarbool import ScalarBoolean
+from ruamel.yaml.scalarint import ScalarInt
+from ruamel.yaml.scalarstring import ScalarString
 
 
 class DictContainer:
@@ -19,7 +23,23 @@ class DictContainer:
         return self._sconf_data.pop(*args, **kwargs)
 
     def asdict(self):
-        return self._sconf_data.toDict()
+        dic = self._sconf_data.toDict()
+        def cvt_type(dic):
+            for k, v in dic.items():
+                if isinstance(v, dict):
+                    dic[k] = cvt_type(v)
+                elif isinstance(v, ScalarFloat):
+                    dic[k] = float(v)
+                elif isinstance(v, ScalarBoolean):
+                    dic[k] = bool(v)
+                elif isinstance(v, ScalarInt):
+                    dic[k] = int(v)
+                elif isinstance(v, ScalarString):
+                    dic[k] = str(v)
+
+            return dic
+
+        return cvt_type(dic)
 
     def __str__(self):
         return str(self.asdict())

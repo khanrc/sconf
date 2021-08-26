@@ -14,6 +14,11 @@ def dump_to_string(data):
 
 
 @pytest.fixture
+def load_cfg():
+    return Config("tests/assets/default.yaml")
+
+
+@pytest.fixture
 def train_dic():
     dic = {
         'lr': 0.001,

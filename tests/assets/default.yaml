@@ -1,0 +1,24 @@
+# cmt
+data_path: /data/public/rw/datasets/imagenet-pytorch
+seed: 42 # how about
+deterministic: True
+arch: resnet50
+accelerator: ddp
+
+# comment
+n_epochs: 90
+
+optim: sgd
+# momentum: 0.9
+wd: 1e-4
+warmup_epoch: 5
+lr: 0.8  # for B=2k
+sched: multistep  # multistep / linear / swa-const / swa-cycle
+
+# for batch_size and n_workers, each number is applied per-device.
+batch_size: 256
+n_workers: 8
+
+# print_freq: 200
+
+swa_mode: Null
