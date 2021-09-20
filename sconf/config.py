@@ -129,8 +129,8 @@ class Config(DictContainer):
         for last in lasts:
             if isinstance(last, list):
                 key = int(key)
-                if key == len(last):
-                    last.append(None)  # extend list
+                #  if key == len(last):
+                #      last.append(None)  # extend list (new arg)
             last[key] = type_infer(value)
 
             if self._sconf_colorize_modified_item:
@@ -153,8 +153,8 @@ class Config(DictContainer):
                 candidates[k_parent] = v
 
         # add new argument
-        if not matches and len(candidates) == 1:
-            return [candidates.popitem()[1]]
+        #  if not matches and len(candidates) == 1:
+        #      return [candidates.popitem()[1]]
 
         return matches
 

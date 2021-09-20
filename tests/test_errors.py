@@ -31,3 +31,20 @@ def test_wrong_multi_match(train_cfg):
 def test_not_matched(train_cfg):
     with pytest.raises(ValueError):
         train_cfg.argv_update(['--model.disc.n_channels', '32'])
+
+
+def test_error_on_newkey(train_cfg):
+    with pytest.raises(ValueError):
+        train_cfg.argv_update([
+            '--newkey', '1'
+        ])
+
+    with pytest.raises(ValueError):
+        train_cfg.argv_update([
+            '--model.newkey', '1'
+        ])
+
+    with pytest.raises(ValueError):
+        train_cfg.argv_update([
+            '--model.encoder.newkey', '1'
+        ])

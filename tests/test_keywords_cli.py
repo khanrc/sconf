@@ -27,6 +27,8 @@ def test_false_cli():
         a: false
         b: FAlse
         c: faLSE
+        d: none
+        e: none
     """)
     cfg = Config(dic)
     cfg.argv_update(['--a', 'False', '--b', 'false', '--c', 'FALSE', '--d', 'Fals', '--e', 'FAlse'])
@@ -43,6 +45,7 @@ def test_none_cli():
         a: 1
         b: 2
         c: 3
+        d: 4
     """)
     cfg = Config(dic)
     cfg.argv_update(['--a', 'None', '--b', 'NONE', '--c', 'none', '--d', 'NOne'])
@@ -58,6 +61,8 @@ def test_null_cli():
         a: 1
         b: 2
         c: 3
+        d: 4
+        e: 5
     """)
     cfg = Config(dic)
     cfg.argv_update(['--a', 'null', '--b', 'Null', '--c', 'NULL', '--d', 'NUll', '--e', '\'Null\''])
